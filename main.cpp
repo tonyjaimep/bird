@@ -158,7 +158,7 @@ int main(void) {
 	sf::FloatRect scoreTextBounds = scoreText.getLocalBounds();
 	scoreText.setPosition(0, window.getSize().y - scoreTextBounds.height * 2);
 
-	std::vector<PipePair> pipePairs;
+	std::vector<PipePair*> pipePairs;
 	unsigned int i;
 
 	// end text objects
@@ -185,7 +185,7 @@ int main(void) {
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 						gameEnded = false;
 						player.reset();
-						pipePairs.push_back(PipePair(&window));
+						pipePairs.push_back(new PipePair(&window));
 						break;
 					} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 						window.close();
@@ -199,19 +199,19 @@ int main(void) {
 				player.updatePosition();
 
 				for (i=0; i < pipePairs.size(); i++) {
-					pipePairs[i].scroll(-2);
-					pipePairs[i].draw();
+					pipePairs[i]->scroll(-2);
+					pipePairs[i]->draw();
 
 					// detect collision
-					if (pipePairs[i].collidesWith(player.shape)) {
+					if (pipePairs[i]->collidesWith(player.shape)) {
 						gameEnded = true;
 						pipePairs.clear();
-					} else if ((pipePairs[i].topPipe.getSize().x + pipePairs[i].topPipe.getPosition().x) < player.shape.getPosition().x) {
+					} else if ((pipePairs[i]->topPipe.getSize().x + pipePairs[i]->topPipe.getPosition().x) == player.shape.getPosition().x) {
 						// FIXME: score keeps going up
 						player.incrementScore(1);
-						pipePairs[i].~PipePair();
-					} else if ((pipePairs[i].topPipe.getSize().x + pipePairs[i].topPipe.getPosition().x) < 0) {
-						pipePairs.push_back(PipePair(&window));
+					} else if ((pipePairs[i]->topPipe.getSize().x + pipePairs[i]->topPipe.getPosition().x) < 0) {
+						delete pipePairs[i];
+						pipePairs.push_back(new PipePair(&window));
 					}
 				}
 
@@ -224,7 +224,7 @@ int main(void) {
 			window.draw(startText);
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 				gameHasStarted = true;
-				pipePairs.push_back(PipePair(&window));
+				pipePairs.push_back(new PipePair(&window));
 			}
 		}
 

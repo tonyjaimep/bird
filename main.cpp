@@ -157,9 +157,8 @@ int main(void) {
 
 	sf::FloatRect scoreTextBounds = scoreText.getLocalBounds();
 	scoreText.setPosition(0, window.getSize().y - scoreTextBounds.height * 2);
-
 	std::vector<PipePair*> pipePairs;
-	unsigned int i;
+	unsigned int i; // iterating over pipePairs
 
 	// end text objects
 
@@ -179,6 +178,7 @@ int main(void) {
 
 		if (gameHasStarted) {
 			if (gameEnded) {
+				pipePairs = {};
 				window.draw(gameOverText);
 				window.display();
 				for (;;) {
@@ -205,12 +205,11 @@ int main(void) {
 					// detect collision
 					if (pipePairs[i]->collidesWith(player.shape)) {
 						gameEnded = true;
-						pipePairs.clear();
 					} else if ((pipePairs[i]->topPipe.getSize().x + pipePairs[i]->topPipe.getPosition().x) == player.shape.getPosition().x) {
-						// FIXME: score keeps going up
 						player.incrementScore(1);
 					} else if ((pipePairs[i]->topPipe.getSize().x + pipePairs[i]->topPipe.getPosition().x) < 0) {
 						delete pipePairs[i];
+						pipePairs.resize(1);
 						pipePairs.push_back(new PipePair(&window));
 					}
 				}
